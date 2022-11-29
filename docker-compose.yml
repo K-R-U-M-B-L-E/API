@@ -1,0 +1,33 @@
+version: '3.9'
+
+services:
+  # [CONTAINER][db_container] (MongoDB)
+  # [INFO] accéder au shell mongo : docker exec -it db_container mongod
+  # Si cela ne marche pas : mongosh --port 27017
+  mongo_db:
+    container_name: db_container
+    image: mongo:latest
+    restart: always
+    ports:
+      - 2717:27017 # host port : container port
+    volumes:
+      - ./mongoInitLocal.js:/docker-entrypoint-initdb.d/mongoInitLocal.js:ro
+
+  # [CONTAINER][node_container] (NodeJS)
+  node_api:
+    container_name: node_container
+    build: . # build from Dockerfile in the folder
+    ports:
+      - 3001:3001 # host port : container port
+    environment:
+      - PORT=3001
+      # mongo db container name, containers does not communicate with each other using localhost
+      - MONGO_DB_URL=mongodb://mongo_db:27017
+      - DB_NAME=todo_db
+    depends_on:
+        - mongo_db
+
+# storage manage by docker
+volumes:
+    mongo_db: {}
+

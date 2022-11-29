@@ -1,17 +1,18 @@
 FROM node:alpine
 
-RUN mkdir -p /usr/src/app
+# RUN mkdir -p /usr/src/app ==> commande windows
 
 WORKDIR /usr/src/app
 
-COPY package*.json /usr/src/app/
+COPY package*.json /usr/src/app
+
+RUN npm ci
 
 RUN npm install
 
-COPY . /usr/src/app
+COPY .. /usr/src/app
 
-EXPOSE 5000
+EXPOSE 3001
 
-ENTRYPOINT [ "npm" ]
-CMD ["start"]
+CMD [ "npm", "start" ]
 

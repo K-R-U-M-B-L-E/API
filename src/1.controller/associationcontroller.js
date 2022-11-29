@@ -1,7 +1,7 @@
 const { response } = require("express");
 const { isNotFound, isExceptionOrError, returnStatus } = require("../utils/utils");
 const utils = require("../utils/utilsAssociation");
-const service = require("../2.service/associationService");
+const service = require("../2.service/associationservice");
 const { sleep } = require("../utils/utils");
 
 

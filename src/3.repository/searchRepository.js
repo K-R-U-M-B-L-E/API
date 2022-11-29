@@ -1,5 +1,5 @@
 const mongo = require("mongodb").MongoClient;
-const url = "mongodb://localhost:27017";
+const url =  process.env.MONGO_DB_URL;
 var ObjectId = require('mongodb').ObjectId; 
 let db
 

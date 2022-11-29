@@ -1,29 +1,24 @@
-const mongo = require("mongodb").MongoClient;
-const url = "mongodb://localhost:27017";
-var ObjectId = require('mongodb').ObjectId; 
-let db
+let ObjectId = require('mongodb').ObjectId;
+const {MongoClient} = require('mongodb');
 
-//CONNECT TO MONGO DB INSTANCE
-mongo.connect(
-    url,
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    },
-    (err, client) => {
-      if (err) {
-        console.error(err)
-        return
-      }
-      db = client.db("krumble-catalogue")
-      associations = db.collection("associations")
+const url =  process.env.MONGO_DB_URL;
+const client = new MongoClient(url);
+
+let associations
+async function connectMongoDatabase() {
+    try {
+        await client.connect();
+        let db = client.db("krumble-catalogue")
+        associations = db.collection("associations")
+    } catch (e) {
+        console.error("[REPOSITORY][associationRepository.js] Error while connecting to mongo database: ", e);
     }
-  )
-
+}
 
 //GET ALL ASSOCIATIONS DOCUMENT
 async function getAll()
 {
+    await connectMongoDatabase()
     return new Promise(function(resolve, reject) {
       associations.find().toArray((err, items) => {
         if (err) {
@@ -38,6 +33,7 @@ async function getAll()
 //GET ALL VISIBLE ASSOCIATIONS DOCUMENT
 async function getVisible()
 {
+    await connectMongoDatabase()
     return new Promise(function(resolve, reject) {
       associations.find( {visible: true }).toArray((err, items) => {
         if (err) {
@@ -52,6 +48,7 @@ async function getVisible()
 //GET ALL INVISIBLE ASSOCIATIONS DOCUMENT
 async function getInvisible()
 {
+    await connectMongoDatabase()
     return new Promise(function(resolve, reject) {
       associations.find( {visible: false }).toArray((err, items) => {
         if (err) {
@@ -66,6 +63,7 @@ async function getInvisible()
 //GET AN ASSOCIATION DOCUMENT BY ID
 async function getSingle(req)
 {
+    await connectMongoDatabase()
     return new Promise(function(resolve, reject) {
     const id = req.params.id;
     associations.find({ _id: ObjectId(`${id}`) }).toArray((err, items) => {
@@ -81,6 +79,7 @@ async function getSingle(req)
 //GET AN ASSOCIATION DOCUMENT BY NAME
 async function getByName(req)
 {
+    await connectMongoDatabase()
     return new Promise(function(resolve, reject) {
     const name = req.params.name;
     associations.find({ name: `${name}` }).toArray((err, items) => {
@@ -96,23 +95,27 @@ async function getByName(req)
 //ADD AN ASSOCIATION DOCUMENT
 async function addSingle(req)
 {
+    await connectMongoDatabase()
   return new Promise(function(resolve, reject) {
-    const newAssociation = req.body
-    
-    associations.insertOne(newAssociation, (err, result) => { 
-        if (err) {
-          console.error(err)
-          reject({ err : err })
-          }
-        resolve({ response : result})
-      })
-    })
-}
+      const newAssociation = req.body
 
+      associations.insertOne(newAssociation, (err, result) => {
+          if (err) {
+              console.error(err)
+              reject({err: err})
+          }
+          resolve({response: result})
+      })
+  }).catch(err => {
+        console.error(err)
+  })
+
+}
 
 //UPDATE AN ASSOCIATION DOCUMENT
 async function updateSingle(req)
 {
+  await connectMongoDatabase()
   return new Promise(function(resolve, reject) {
     const id = req.params.id
     var newvalues = { $set: req.body };
@@ -130,6 +133,7 @@ async function updateSingle(req)
 //DELETE AN ASSOCIATION DOCUMENT
 async function deleteSingle(req)
 {
+  await connectMongoDatabase()
   const id = req.params.id;
   return new Promise(function(resolve, reject) {
 

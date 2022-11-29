@@ -2,7 +2,7 @@ const express = require("express");
 const app = express()
 app.use(express.json())
 
-const Associationcontroller = require('./1.controller/associationController');
+const Associationcontroller = require('./1.controller/associationcontroller');
 const Projectcontroller = require('./1.controller/projectController');
 const Searchcontroller = require('./1.controller/searchController');
 const Universitycontroller = require('./1.controller/universityController');
@@ -15,8 +15,6 @@ app.listen(
     PORT, 
     () => console.log("Time to Krummmble")
 )
-
-
 
 app.use((error, request, response, next) => {
   if (error !== null) {
