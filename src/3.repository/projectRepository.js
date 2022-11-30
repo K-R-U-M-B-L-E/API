@@ -1,34 +1,16 @@
-//const mongo = require("mongodb").MongoClient;
-const { MongoClient } = require('mongodb');
-const url =  process.env.MONGO_DB_URL;
-var ObjectId = require('mongodb').ObjectId; 
-let db
-
-
-//CONNECT TO MONGO DB INSTANCE
-mongo.connect(
-    url,
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    },
-    (err, client) => {
-      if (err) {
-        console.error(err)
-        return
-      }
-      db = client.db("krumble-catalogue")
-      projects = db.collection("projects")
-    }
-  )
-
+let ObjectId = require('mongodb').ObjectId;
 
 //GET ALL PROJECTS DOCUMENT
+const {PROJECTS_COLLECTION} = require("../database/database");
+
 async function getAll()
 {
+    let collection = await PROJECTS_COLLECTION.getCollection();
+    console.log("getAll")
     return new Promise(function(resolve, reject) {
-      projects.find().toArray((err, items) => {
+      collection.find().toArray((err, items) => {
         if (err) {
+            console.log(err)
           console.error(err)
           reject({ err : err })
         }
@@ -40,9 +22,10 @@ async function getAll()
 //GET AN PROJECT DOCUMENT BY ID
 async function getSingle(req)
 {
+    let collection = await PROJECTS_COLLECTION.getCollection();
     return new Promise(function(resolve, reject) {
     const id = req.params.id;
-    projects.find({ _id: ObjectId(`${id}`) }).toArray((err, items) => {
+        collection.find({ _id: ObjectId(`${id}`) }).toArray((err, items) => {
         if (err) {
           console.error(err)
           reject({ err : err })
@@ -55,9 +38,10 @@ async function getSingle(req)
 //GET AN PROJECT DOCUMENT BY ASSO ID
 async function getByAsso(req)
 {
+    let collection = await PROJECTS_COLLECTION.getCollection();
     return new Promise(function(resolve, reject) {
     const id = req.params.id;
-    projects.find({ association: `${id}`}).toArray((err, items) => {
+        collection.find({ association: `${id}`}).toArray((err, items) => {
         if (err) {
           console.error(err)
           reject({ err : err })
@@ -70,10 +54,11 @@ async function getByAsso(req)
 //ADD AN PROJECT DOCUMENT
 async function addSingle(req)
 {
+    let collection = await PROJECTS_COLLECTION.getCollection();
   return new Promise(function(resolve, reject) {
     const newProject = req.body
-    
-    projects.insertOne(newProject, (err, result) => { 
+
+      collection.insertOne(newProject, (err, result) => {
         if (err) {
           console.error(err)
           reject({ err : err })
@@ -86,11 +71,12 @@ async function addSingle(req)
 //UPDATE AN PROJECT DOCUMENT
 async function updateSingle(req)
 {
+    let collection = await PROJECTS_COLLECTION.getCollection();
   return new Promise(function(resolve, reject) {
     const id = req.params.id
     var newvalues = { $set: req.body };
-    
-    projects.updateOne({ _id: ObjectId(`${id}`)}, newvalues , (err, result) => { 
+
+      collection.updateOne({ _id: ObjectId(`${id}`)}, newvalues , (err, result) => {
         if (err) {
           console.error(err)
           reject({ err : err })
@@ -103,12 +89,13 @@ async function updateSingle(req)
 //UPDATE SEVERAL PROJECT DOCUMENTS
 async function updateMultiple(req)
 {
+    let collection = await PROJECTS_COLLECTION.getCollection();
   return new Promise(function(resolve, reject) {
     const id = req.params.id
     var newvalues = { $set: req.body.updates };
     var filter = req.body.filter;
-    
-    projects.updateOne(filter, newvalues , (err, result) => { 
+
+      collection.updateOne(filter, newvalues , (err, result) => {
         if (err) {
           console.error(err)
           reject({ err : err })
@@ -121,10 +108,11 @@ async function updateMultiple(req)
 //DELETE AN PROJECT DOCUMENT
 async function deleteSingle(req)
 {
+    let collection = await PROJECTS_COLLECTION.getCollection();
   const id = req.params.id;
   return new Promise(function(resolve, reject) {
 
-    projects.deleteOne({ _id: ObjectId(`${id}`) }, (err, result) => { 
+      collection.deleteOne({ _id: ObjectId(`${id}`) }, (err, result) => {
       if (err) {
         console.error(err)
         reject({ err: err })
@@ -137,10 +125,11 @@ async function deleteSingle(req)
 //DELETE SEVERAL PROJECT DOCUMENTS
 async function deleteMultiple(req)
 {
+    let collection = await PROJECTS_COLLECTION.getCollection();
   var filter = req.body.filter;
   return new Promise(function(resolve, reject) {
 
-    projects.deleteMany(filter, (err, result) => { 
+      collection.deleteMany(filter, (err, result) => {
       if (err) {
         console.error(err)
         reject({ err: err })

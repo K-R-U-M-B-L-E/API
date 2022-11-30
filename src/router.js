@@ -10,6 +10,7 @@ const Usercontroller = require('./1.controller/userController');
 
 const auth=require("./middleware/auth");
 
+
 const PORT = 3001;
 app.listen(
     PORT, 
@@ -73,8 +74,11 @@ app.post('/testsearch', (req, res) => { Searchcontroller.testsearch(req,res) })
 
 
 
-
-
 app.all('*', function(req, res) {
+    // erreur : devrait répondre avec une erreur 404 mais répond en 200
+    console.log("[ROUTER][ERROR] Bad Request");
+    console.log("URL Request:", req.originalUrl);
+    console.log("METHOD Request:", req.method);
+    console.log("----------------------------------------");
     res.status(400).json({err : "Bad Request"});
 })

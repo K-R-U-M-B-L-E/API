@@ -1,33 +1,14 @@
-const mongo = require("mongodb").MongoClient;
-const url =  process.env.MONGO_DB_URL;
-var ObjectId = require('mongodb').ObjectId; 
-let db
-
-
-//CONNECT TO MONGO DB INSTANCE
-mongo.connect(
-    url,
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    },
-    (err, client) => {
-      if (err) {
-        console.error(err)
-        return
-      }
-      db = client.db("krumble-catalogue")
-      associations = db.collection("associations")
-      projects = db.collection("projects")
-    }
-  )
+let ObjectId = require('mongodb').ObjectId;
 
 
 //SEARCH ALL ASSOCIATIONS DOCUMENT
+const {ASSOCIATIONS_COLLECTION, PROJECTS_COLLECTION} = require("../database/database");
+
 async function search(pipeline)
 {
+    let collection = await ASSOCIATIONS_COLLECTION.getCollection();
     return new Promise(function(resolve, reject) {
-      associations.aggregate(pipeline).toArray((err, items) => {
+      collection.aggregate(pipeline).toArray((err, items) => {
         if (err) {
           console.error(err)
           reject({ err : err })
@@ -40,8 +21,9 @@ async function search(pipeline)
 //GET DISTINCT VALUE FOR A FIELD
 async function getFieldValue(props)
 {
+    let collection = await ASSOCIATIONS_COLLECTION.getCollection();
     return new Promise(function(resolve, reject) {
-      associations.distinct(props, (err, items) => {
+        collection.distinct(props, (err, items) => {
         if (err) {
           console.error(err)
           reject({ err : err })
@@ -55,8 +37,9 @@ async function getFieldValue(props)
 //SEARCH IN ALL PROJECTS DOCUMENT
 async function searchProject(pipeline)
 {
+    let collection = await PROJECTS_COLLECTION.getCollection();
     return new Promise(function(resolve, reject) {
-      projects.aggregate(pipeline).toArray((err, items) => {
+      collection.aggregate(pipeline).toArray((err, items) => {
         if (err) {
           console.error(err)
           reject({ err : err })
@@ -69,8 +52,9 @@ async function searchProject(pipeline)
 //GET DISTINCT VALUE FOR A FIELD OF PROJECT
 async function getFieldValueProject(props)
 {
+    let collection = await PROJECTS_COLLECTION.getCollection();
     return new Promise(function(resolve, reject) {
-      projects.distinct(props, (err, items) => {
+      collection.distinct(props, (err, items) => {
         if (err) {
           console.error(err)
           reject({ err : err })

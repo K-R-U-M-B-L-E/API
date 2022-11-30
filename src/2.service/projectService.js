@@ -1,5 +1,5 @@
 const repository = require("../3.repository/projectRepository");
-const associationService = require("./associationService");
+const associationService = require("./associationservice");
 const { isThereMandatoryFields, isProjectFields } = require("../utils/utilsProject");
 const { isJsonValid, isJsonEmpty } = require("../utils/utils");
 const { json } = require("express");

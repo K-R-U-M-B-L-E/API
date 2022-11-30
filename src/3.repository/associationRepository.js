@@ -1,26 +1,16 @@
-let ObjectId = require('mongodb').ObjectId;
-const {MongoClient} = require('mongodb');
-
-const url =  process.env.MONGO_DB_URL;
-const client = new MongoClient(url);
-
-let associations
-async function connectMongoDatabase() {
-    try {
-        await client.connect();
-        let db = client.db("krumble-catalogue")
-        associations = db.collection("associations")
-    } catch (e) {
-        console.error("[REPOSITORY][associationRepository.js] Error while connecting to mongo database: ", e);
-    }
-}
-
+const ObjectId = require('mongodb').ObjectId;
 //GET ALL ASSOCIATIONS DOCUMENT
+const {ASSOCIATIONS_COLLECTION} = require("../database/database");
+
 async function getAll()
 {
-    await connectMongoDatabase()
+    let collection = await ASSOCIATIONS_COLLECTION.getCollection();
     return new Promise(function(resolve, reject) {
-      associations.find().toArray((err, items) => {
+        if (process.env.TEST) {
+            console.log("[TEST] AssociationRepository.getAll()");
+        }
+
+        collection.find().toArray((err, items) => {
         if (err) {
           console.error(err)
           reject({ err : err })
@@ -33,9 +23,12 @@ async function getAll()
 //GET ALL VISIBLE ASSOCIATIONS DOCUMENT
 async function getVisible()
 {
-    await connectMongoDatabase()
+    let collection = await ASSOCIATIONS_COLLECTION.getCollection();
     return new Promise(function(resolve, reject) {
-      associations.find( {visible: true }).toArray((err, items) => {
+        if (process.env.TEST) {
+            console.log("[TEST] AssociationRepository.getVisible()");
+        }
+        collection.find( {visible: true }).toArray((err, items) => {
         if (err) {
           console.error(err)
           reject({ err : err })
@@ -48,9 +41,12 @@ async function getVisible()
 //GET ALL INVISIBLE ASSOCIATIONS DOCUMENT
 async function getInvisible()
 {
-    await connectMongoDatabase()
+    let collection = await ASSOCIATIONS_COLLECTION.getCollection();
     return new Promise(function(resolve, reject) {
-      associations.find( {visible: false }).toArray((err, items) => {
+        if (process.env.TEST) {
+            console.log("[TEST] AssociationRepository.getInvisible()");
+        }
+        collection.find( {visible: false }).toArray((err, items) => {
         if (err) {
           console.error(err)
           reject({ err : err })
@@ -63,10 +59,13 @@ async function getInvisible()
 //GET AN ASSOCIATION DOCUMENT BY ID
 async function getSingle(req)
 {
-    await connectMongoDatabase()
+    let collection = await ASSOCIATIONS_COLLECTION.getCollection();
     return new Promise(function(resolve, reject) {
+        if (process.env.TEST) {
+            console.log("[TEST] AssociationRepository.getSingle()");
+        }
     const id = req.params.id;
-    associations.find({ _id: ObjectId(`${id}`) }).toArray((err, items) => {
+        collection.find({ _id: ObjectId(`${id}`) }).toArray((err, items) => {
         if (err) {
           console.error(err)
           reject({ err : err })
@@ -79,10 +78,13 @@ async function getSingle(req)
 //GET AN ASSOCIATION DOCUMENT BY NAME
 async function getByName(req)
 {
-    await connectMongoDatabase()
+    let collection = await ASSOCIATIONS_COLLECTION.getCollection();
     return new Promise(function(resolve, reject) {
+        if (process.env.TEST) {
+            console.log("[TEST] AssociationRepository.getByName()");
+        }
     const name = req.params.name;
-    associations.find({ name: `${name}` }).toArray((err, items) => {
+        collection.find({ name: `${name}` }).toArray((err, items) => {
         if (err) {
           console.error(err)
           reject({ err : err })
@@ -95,11 +97,14 @@ async function getByName(req)
 //ADD AN ASSOCIATION DOCUMENT
 async function addSingle(req)
 {
-    await connectMongoDatabase()
+    let collection = await ASSOCIATIONS_COLLECTION.getCollection();
   return new Promise(function(resolve, reject) {
+      if (process.env.TEST) {
+          console.log("[TEST] AssociationRepository.addSingle()");
+      }
       const newAssociation = req.body
 
-      associations.insertOne(newAssociation, (err, result) => {
+      collection.insertOne(newAssociation, (err, result) => {
           if (err) {
               console.error(err)
               reject({err: err})
@@ -115,12 +120,15 @@ async function addSingle(req)
 //UPDATE AN ASSOCIATION DOCUMENT
 async function updateSingle(req)
 {
-  await connectMongoDatabase()
+    let collection = await ASSOCIATIONS_COLLECTION.getCollection();
   return new Promise(function(resolve, reject) {
+      if (process.env.TEST) {
+          console.log("[TEST] AssociationRepository.updateSingle()");
+      }
     const id = req.params.id
     var newvalues = { $set: req.body };
-    
-    associations.updateOne({ _id: ObjectId(`${id}`)}, newvalues , (err, result) => { 
+
+      collection.updateOne({ _id: ObjectId(`${id}`)}, newvalues , (err, result) => {
         if (err) {
           console.error(err)
           reject({ err : err })
@@ -133,11 +141,13 @@ async function updateSingle(req)
 //DELETE AN ASSOCIATION DOCUMENT
 async function deleteSingle(req)
 {
-  await connectMongoDatabase()
+    let collection = await ASSOCIATIONS_COLLECTION.getCollection();
   const id = req.params.id;
   return new Promise(function(resolve, reject) {
-
-    associations.deleteOne({ _id: ObjectId(`${id}`) }, (err, result) => { 
+      if (process.env.TEST) {
+          console.log("[TEST] AssociationRepository.deleteSingle()");
+      }
+      collection.deleteOne({ _id: ObjectId(`${id}`) }, (err, result) => {
       if (err) {
         console.error(err)
         reject({ err: err })

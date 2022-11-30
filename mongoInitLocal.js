@@ -7,3 +7,18 @@ catalogue.createCollection('associations');
 catalogue.associations.createIndex(
       { name: "text" }
 );
+
+catalogue.createCollection('projects');
+catalogue.projects.createIndex(
+        { name: "text" }
+);
+
+catalogue.createCollection('users');
+catalogue.users.createIndex(
+        { email: "text" }
+);
+
+catalogue.createCollection('universities');
+catalogue.universities.createIndex(
+        { name: "text" }
+);

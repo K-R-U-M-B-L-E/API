@@ -1,31 +1,14 @@
-const mongo = require("mongodb").MongoClient;
-const url = process.env.MONGO_DB_URL; //"mongodb://localhost:27017";
-var ObjectId = require('mongodb').ObjectId; 
-let db
-
-//CONNECT TO MONGO DB INSTANCE
-mongo.connect(
-    url,
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    },
-    (err, client) => {
-      if (err) {
-        console.error(err)
-        return
-      }
-      db = client.db("krumble-catalogue")
-      universities = db.collection("universities")
-    }
-  )
-
+let ObjectId = require('mongodb').ObjectId;
 
 //GET ALL UINVERSITIES DOCUMENT
+
+const {UNIVERSITIES_COLLECTION} = require("../database/database");
+
 async function getAll()
 {
+    let collection = await UNIVERSITIES_COLLECTION.getCollection();
     return new Promise(function(resolve, reject) {
-      universities.find().toArray((err, items) => {
+      collection.find().toArray((err, items) => {
         if (err) {
           console.error(err)
           reject({ err : err })
@@ -38,9 +21,10 @@ async function getAll()
 //GET AN UNIVERSITY DOCUMENT BY ID
 async function getSingle(req)
 {
+    let collection = await UNIVERSITIES_COLLECTION.getCollection();
     return new Promise(function(resolve, reject) {
     const id = req.params.id;
-    universities.find({ _id: ObjectId(`${id}`) }).toArray((err, items) => {
+    collection.find({ _id: ObjectId(`${id}`) }).toArray((err, items) => {
         if (err) {
           console.error(err)
           reject({ err : err })
@@ -53,10 +37,11 @@ async function getSingle(req)
 //ADD AN UNIVERSITY DOCUMENT
 async function addSingle(req)
 {
+    let collection = await UNIVERSITIES_COLLECTION.getCollection();
   return new Promise(function(resolve, reject) {
     const newAssociation = req.body
     
-    universities.insertOne(newAssociation, (err, result) => { 
+    collection.insertOne(newAssociation, (err, result) => {
         if (err) {
           console.error(err)
           reject({ err : err })
@@ -70,11 +55,12 @@ async function addSingle(req)
 //UPDATE AN UNIVERSITY DOCUMENT
 async function updateSingle(req)
 {
+    let collection = await UNIVERSITIES_COLLECTION.getCollection();
   return new Promise(function(resolve, reject) {
     const id = req.params.id
     var newvalues = { $set: req.body };
     
-    universities.updateOne({ _id: ObjectId(`${id}`)}, newvalues , (err, result) => { 
+    collection.updateOne({ _id: ObjectId(`${id}`)}, newvalues , (err, result) => {
         if (err) {
           console.error(err)
           reject({ err : err })
@@ -87,10 +73,11 @@ async function updateSingle(req)
 //DELETE AN UNIVERSITY DOCUMENT
 async function deleteSingle(req)
 {
+    let collection = await UNIVERSITIES_COLLECTION.getCollection();
   const id = req.params.id;
   return new Promise(function(resolve, reject) {
 
-    universities.deleteOne({ _id: ObjectId(`${id}`) }, (err, result) => { 
+    collection.deleteOne({ _id: ObjectId(`${id}`) }, (err, result) => {
       if (err) {
         console.error(err)
         reject({ err: err })
