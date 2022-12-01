@@ -1,134 +1,121 @@
-const mongo = require("mongodb").MongoClient;
-const url = "mongodb://localhost:27017";
-var ObjectId = require('mongodb').ObjectId; 
-let db
-
-//CONNECT TO MONGO DB INSTANCE
-mongo.connect(
-    url,
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    },
-    (err, client) => {
-      if (err) {
-        console.error(err)
-        return
-      }
-      db = client.db("krumble-catalogue")
-      users = db.collection("users")
-    }
-  )
-
+let ObjectId = require('mongodb').ObjectId;
+const { USERS_COLLECTION } = require('../database/database');
 
 //GET ALL UINVERSITIES DOCUMENT
-async function getAll()
-{
-    return new Promise(function(resolve, reject) {
-      users.find().toArray((err, items) => {
-        if (err) {
-          console.error(err)
-          reject({ err : err })
-        }
-      resolve({users : items});
-      })
-    })
+async function getAll() {
+  let collection = await USERS_COLLECTION.getCollection();
+  return new Promise(function (resolve, reject) {
+    collection.find().toArray((err, items) => {
+      if (err) {
+        console.error(err);
+        reject({ err: err });
+      }
+      resolve({ users: items });
+    });
+  });
 }
 
 //GET AN USER DOCUMENT BY ID
-async function getSingle(req)
-{
-    return new Promise(function(resolve, reject) {
+async function getSingle(req) {
+  let collection = await USERS_COLLECTION.getCollection();
+  return new Promise(function (resolve, reject) {
     const id = req.params.id;
-    users.find({ _id: ObjectId(`${id}`) }).toArray((err, items) => {
-        if (err) {
-          console.error(err)
-          reject({ err : err })
-        }
-        resolve({  user : items[0] })
-      })
-    })
+    collection.find({ _id: ObjectId(`${id}`) }).toArray((err, items) => {
+      if (err) {
+        console.error(err);
+        reject({ err: err });
+      }
+      resolve({ user: items[0] });
+    });
+  });
 }
-
 
 //GET AN USER DOCUMENT BY EMAIL
-async function getByEmail(req)
-{
-    return new Promise(function(resolve, reject) {
+async function getByEmail(req) {
+  let collection = await USERS_COLLECTION.getCollection();
+  return new Promise(function (resolve, reject) {
     const email = req.params.email;
-    users.find({ email: email }).toArray((err, items) => {
-        if (err) {
-          console.error(err)
-          reject({ err : err })
-        }
-        resolve({  user : items[0] })
-      })
-    })
+    collection.find({ email: email }).toArray((err, items) => {
+      if (err) {
+        console.error(err);
+        reject({ err: err });
+      }
+      resolve({ user: items[0] });
+    });
+  });
 }
 
-
 //GET AN USER DOCUMENT BY TOKEN
-async function getByToken(req)
-{
-    return new Promise(function(resolve, reject) {
+async function getByToken(req) {
+  let collection = await USERS_COLLECTION.getCollection();
+  return new Promise(function (resolve, reject) {
     const token = req.params.token;
-    users.find({ token: token }).toArray((err, items) => {
-        if (err) {
-          console.error(err)
-          reject({ err : err })
-        }
-        resolve({  user : items[0] })
-      })
-    })
+    collection.find({ token: token }).toArray((err, items) => {
+      if (err) {
+        console.error(err);
+        reject({ err: err });
+      }
+      resolve({ user: items[0] });
+    });
+  });
 }
 
 //ADD AN USER DOCUMENT
-async function addSingle(user)
-{
-  return new Promise(function(resolve, reject) {
-    
-    users.insertOne(user, (err, result) => { 
-        if (err) {
-          console.error(err)
-          reject({ err : err })
-          }
-        resolve({ response : result})
-      })
-    })
+async function addSingle(user) {
+  let collection = await USERS_COLLECTION.getCollection();
+  return new Promise(function (resolve, reject) {
+    collection.insertOne(user, (err, result) => {
+      if (err) {
+        console.error(err);
+        reject({ err: err });
+      }
+      resolve({ response: result });
+    });
+  });
 }
 
-
 //UPDATE AN USER DOCUMENT
-async function updateSingle(req)
-{
-  return new Promise(function(resolve, reject) {
-    const id = req.params.id
+async function updateSingle(req) {
+  let collection = await USERS_COLLECTION.getCollection();
+  return new Promise(function (resolve, reject) {
+    const id = req.params.id;
     var newvalues = { $set: req.body };
-    
-    users.updateOne({ _id: ObjectId(`${id}`)}, newvalues , (err, result) => { 
+
+    collection.updateOne(
+      { _id: ObjectId(`${id}`) },
+      newvalues,
+      (err, result) => {
         if (err) {
-          console.error(err)
-          reject({ err : err })
-          }
-        resolve({ response : result})
-      })
-    })
+          console.error(err);
+          reject({ err: err });
+        }
+        resolve({ response: result });
+      }
+    );
+  });
 }
 
 //DELETE AN USER DOCUMENT
-async function deleteSingle(req)
-{
+async function deleteSingle(req) {
+  let collection = await USERS_COLLECTION.getCollection();
   const id = req.params.id;
-  return new Promise(function(resolve, reject) {
-
-    users.deleteOne({ _id: ObjectId(`${id}`) }, (err, result) => { 
+  return new Promise(function (resolve, reject) {
+    collection.deleteOne({ _id: ObjectId(`${id}`) }, (err, result) => {
       if (err) {
-        console.error(err)
-        reject({ err: err })
+        console.error(err);
+        reject({ err: err });
       }
-      resolve({ response : result})
-    })
-  })
+      resolve({ response: result });
+    });
+  });
 }
 
-module.exports = {getAll, getSingle, getByEmail, getByToken, addSingle, deleteSingle, updateSingle};
+module.exports = {
+  getAll,
+  getSingle,
+  getByEmail,
+  getByToken,
+  addSingle,
+  deleteSingle,
+  updateSingle,
+};

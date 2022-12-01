@@ -1,103 +1,87 @@
-const mongo = require("mongodb").MongoClient;
-const url = "mongodb://localhost:27017";
-var ObjectId = require('mongodb').ObjectId; 
-let db
-
-//CONNECT TO MONGO DB INSTANCE
-mongo.connect(
-    url,
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    },
-    (err, client) => {
-      if (err) {
-        console.error(err)
-        return
-      }
-      db = client.db("krumble-catalogue")
-      universities = db.collection("universities")
-    }
-  )
-
+let ObjectId = require('mongodb').ObjectId;
 
 //GET ALL UINVERSITIES DOCUMENT
-async function getAll()
-{
-    return new Promise(function(resolve, reject) {
-      universities.find().toArray((err, items) => {
-        if (err) {
-          console.error(err)
-          reject({ err : err })
-        }
-      resolve({universities : items});
-      })
-    })
+
+const { UNIVERSITIES_COLLECTION } = require('../database/database');
+
+async function getAll() {
+  let collection = await UNIVERSITIES_COLLECTION.getCollection();
+  return new Promise(function (resolve, reject) {
+    collection.find().toArray((err, items) => {
+      if (err) {
+        console.error(err);
+        reject({ err: err });
+      }
+      resolve({ universities: items });
+    });
+  });
 }
 
 //GET AN UNIVERSITY DOCUMENT BY ID
-async function getSingle(req)
-{
-    return new Promise(function(resolve, reject) {
+async function getSingle(req) {
+  let collection = await UNIVERSITIES_COLLECTION.getCollection();
+  return new Promise(function (resolve, reject) {
     const id = req.params.id;
-    universities.find({ _id: ObjectId(`${id}`) }).toArray((err, items) => {
-        if (err) {
-          console.error(err)
-          reject({ err : err })
-        }
-        resolve({  university : items[0] })
-      })
-    })
+    collection.find({ _id: ObjectId(`${id}`) }).toArray((err, items) => {
+      if (err) {
+        console.error(err);
+        reject({ err: err });
+      }
+      resolve({ university: items[0] });
+    });
+  });
 }
 
 //ADD AN UNIVERSITY DOCUMENT
-async function addSingle(req)
-{
-  return new Promise(function(resolve, reject) {
-    const newAssociation = req.body
-    
-    universities.insertOne(newAssociation, (err, result) => { 
-        if (err) {
-          console.error(err)
-          reject({ err : err })
-          }
-        resolve({ response : result})
-      })
-    })
+async function addSingle(req) {
+  let collection = await UNIVERSITIES_COLLECTION.getCollection();
+  return new Promise(function (resolve, reject) {
+    const newAssociation = req.body;
+
+    collection.insertOne(newAssociation, (err, result) => {
+      if (err) {
+        console.error(err);
+        reject({ err: err });
+      }
+      resolve({ response: result });
+    });
+  });
 }
 
-
 //UPDATE AN UNIVERSITY DOCUMENT
-async function updateSingle(req)
-{
-  return new Promise(function(resolve, reject) {
-    const id = req.params.id
+async function updateSingle(req) {
+  let collection = await UNIVERSITIES_COLLECTION.getCollection();
+  return new Promise(function (resolve, reject) {
+    const id = req.params.id;
     var newvalues = { $set: req.body };
-    
-    universities.updateOne({ _id: ObjectId(`${id}`)}, newvalues , (err, result) => { 
+
+    collection.updateOne(
+      { _id: ObjectId(`${id}`) },
+      newvalues,
+      (err, result) => {
         if (err) {
-          console.error(err)
-          reject({ err : err })
-          }
-        resolve({ response : result})
-      })
-    })
+          console.error(err);
+          reject({ err: err });
+        }
+        resolve({ response: result });
+      }
+    );
+  });
 }
 
 //DELETE AN UNIVERSITY DOCUMENT
-async function deleteSingle(req)
-{
+async function deleteSingle(req) {
+  let collection = await UNIVERSITIES_COLLECTION.getCollection();
   const id = req.params.id;
-  return new Promise(function(resolve, reject) {
-
-    universities.deleteOne({ _id: ObjectId(`${id}`) }, (err, result) => { 
+  return new Promise(function (resolve, reject) {
+    collection.deleteOne({ _id: ObjectId(`${id}`) }, (err, result) => {
       if (err) {
-        console.error(err)
-        reject({ err: err })
+        console.error(err);
+        reject({ err: err });
       }
-      resolve({ response : result})
-    })
-  })
+      resolve({ response: result });
+    });
+  });
 }
 
-module.exports = {getAll, getSingle, addSingle, deleteSingle, updateSingle};
+module.exports = { getAll, getSingle, addSingle, deleteSingle, updateSingle };
