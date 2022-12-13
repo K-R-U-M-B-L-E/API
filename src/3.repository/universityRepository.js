@@ -2,7 +2,7 @@ let ObjectId = require('mongodb').ObjectId;
 
 //GET ALL UINVERSITIES DOCUMENT
 
-const { UNIVERSITIES_COLLECTION } = require('../database/database');
+const { UNIVERSITIES_COLLECTION } = require('../databases/mongoDB');
 
 async function getAll() {
   let collection = await UNIVERSITIES_COLLECTION.getCollection();

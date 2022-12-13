@@ -1,7 +1,7 @@
 let ObjectId = require('mongodb').ObjectId;
 
 //GET ALL PROJECTS DOCUMENT
-const { PROJECTS_COLLECTION } = require('../database/database');
+const { PROJECTS_COLLECTION } = require('../databases/mongoDB');
 
 async function getAll() {
   let collection = await PROJECTS_COLLECTION.getCollection();

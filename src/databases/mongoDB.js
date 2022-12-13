@@ -1,4 +1,3 @@
-let ObjectId = require('mongodb').ObjectId;
 const { MongoClient } = require('mongodb');
 
 const DATABASE_NAME = 'krumble-catalogue';
@@ -13,8 +12,8 @@ const client = new MongoClient(url);
 async function connectMongoDatabase(databaseName, collectionName) {
   try {
     await client.connect();
-    let db = client.db(databaseName);
-    let collection = db.collection(collectionName);
+    const db = client.db(databaseName);
+    const collection = db.collection(collectionName);
     return collection;
   } catch (e) {
     console.error(
@@ -29,9 +28,9 @@ async function connectMongoDatabase(databaseName, collectionName) {
 }
 
 // design pattern singleton to avoid multiple connection to the database
-let ASSOCIATIONS_COLLECTION = {
+const ASSOCIATIONS_COLLECTION = {
   connection: null,
-  getCollection: async function () {
+  async getCollection() {
     if (this.connection == null) {
       if (process.env.TEST) {
         console.log(
@@ -49,9 +48,9 @@ let ASSOCIATIONS_COLLECTION = {
   },
 };
 
-let PROJECTS_COLLECTION = {
+const PROJECTS_COLLECTION = {
   connection: null,
-  getCollection: async function () {
+  async getCollection() {
     if (this.connection == null) {
       if (process.env.TEST) {
         console.log('[TEST][database.js]: PROJECTS_COLLECTION.getCollection()');
@@ -66,9 +65,9 @@ let PROJECTS_COLLECTION = {
     return this.connection;
   },
 };
-let USERS_COLLECTION = {
+const USERS_COLLECTION = {
   connection: null,
-  getCollection: async function () {
+  async getCollection() {
     if (this.connection == null) {
       if (process.env.TEST) {
         console.log('[TEST][database.js]: USERS_COLLECTION.getCollection()');
@@ -83,9 +82,9 @@ let USERS_COLLECTION = {
     return this.connection;
   },
 };
-let UNIVERSITIES_COLLECTION = {
+const UNIVERSITIES_COLLECTION = {
   connection: null,
-  getCollection: async function () {
+  async getCollection() {
     if (this.connection == null) {
       if (process.env.TEST) {
         console.log(

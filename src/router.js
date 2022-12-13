@@ -1,5 +1,7 @@
 const express = require('express');
 const app = express();
+const multer = require('multer');
+
 app.use(express.json());
 
 const Associationcontroller = require('./1.controller/associationcontroller');
@@ -7,6 +9,7 @@ const Projectcontroller = require('./1.controller/projectController');
 const Searchcontroller = require('./1.controller/searchController');
 const Universitycontroller = require('./1.controller/universityController');
 const Usercontroller = require('./1.controller/userController');
+const {uploadFile} = require('./databases/bucketS3');
 
 const auth = require('./middleware/auth');
 
@@ -132,6 +135,39 @@ app.post('/textsearch', (req, res) => {
 app.post('/testsearch', (req, res) => {
   Searchcontroller.testsearch(req, res);
 });
+//////////////////////////////////////////  TEST UPLOAD PICTURE ///////////////////////////////////////////////
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+// upload.single("file") - file is the name in the form-data request
+app.post("/document", upload.single("file"), function(req, res) {
+  const file = req.file;
+  console.log(req.body);
+  console.log(req.file);
+  let filelocation;
+
+  uploadFile(file.buffer, file.originalname)
+    .then((response) => {
+      console.log("<<Uploaded file to S3>>")
+      console.log(response);
+      filelocation = response.Location;
+      //return { filelocation, filename, mimetype, encoding };
+      res.status(200).send({filelocation})
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(400).send('Error')
+    })
+
+
+});
+
+
+
+
+
+
 
 app.all('*', function (req, res) {
   // erreur : devrait répondre avec une erreur 404 mais répond en 200

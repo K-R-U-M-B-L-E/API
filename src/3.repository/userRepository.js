@@ -1,5 +1,5 @@
 let ObjectId = require('mongodb').ObjectId;
-const { USERS_COLLECTION } = require('../database/database');
+const { USERS_COLLECTION } = require('../databases/mongoDB');
 
 //GET ALL UINVERSITIES DOCUMENT
 async function getAll() {

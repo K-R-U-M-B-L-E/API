@@ -4,7 +4,7 @@ let ObjectId = require('mongodb').ObjectId;
 const {
   ASSOCIATIONS_COLLECTION,
   PROJECTS_COLLECTION,
-} = require('../database/database');
+} = require('../databases/mongoDB');
 
 async function search(pipeline) {
   let collection = await ASSOCIATIONS_COLLECTION.getCollection();

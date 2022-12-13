@@ -1,6 +1,6 @@
 const ObjectId = require('mongodb').ObjectId;
 //GET ALL ASSOCIATIONS DOCUMENT
-const { ASSOCIATIONS_COLLECTION } = require('../database/database');
+const { ASSOCIATIONS_COLLECTION } = require('../databases/mongoDB');
 
 async function getAll() {
   let collection = await ASSOCIATIONS_COLLECTION.getCollection();
