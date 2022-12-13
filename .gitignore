@@ -4,3 +4,5 @@ package-lock.json
 node_modules
 config/tmp
 config/var
+config/.localstack/var
+config/.localstack/tmp

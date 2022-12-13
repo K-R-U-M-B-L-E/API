@@ -19,18 +19,24 @@ services:
     #[DEBUG] interface ui web : http://localhost:8050
     #image: localstack/localstack-full:latest # Full image support WebUI
     container_name: localstack_container
+  #  build:
+  #    dockerfile: ./.localstack/Dockerfile
     ports:
       - '4566:4566' # port for S3
-      #[DEBUG] interface ui web : http://localhost:8050
+     #[DEBUG] interface ui web : http://localhost:8050
       #- '8055:8080' # port for the web interface
     environment:
       - SERVICES=s3
       - DEBUG=1
-      - DATA_DIR=/tmp/localstack/data
-      - CONTAINER_NAME=localstack
+      - DATA_DIR=/.localstack/tmp/localstack/data
+      - CONTAINER_NAME=localstack_container
     volumes:
-      - ./var/lib/localstack:/var/lib/localstack
-      - /var/run/docker.sock:/var/run/docker.sock
+      - ./.localstack/var/lib/localstack:/var/lib/localstack
+      - ./.localstack/var/run/docker.sock:/var/run/docker.sock
+  #  [INFO] les paramètres AWS sont placer dans $HOME/.aws/credentials (ici: $HOME = root)
+      - ./.localstack/.aws/config:/root/.aws/config
+      - ./.localstack/.aws/credentials:/root/.aws/credentials
+
 
   # [CONTAINER][node_container] (NodeJS)
   # [INFO] the context attribute allow to the Dockerfile to have a vision in the API folder
